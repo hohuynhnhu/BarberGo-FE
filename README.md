@@ -1,16 +1,14 @@
-# barbergofe
+# BarberGO - Frontend
 
-A new Flutter project.
+Frontend của ứng dụng **BarberGO** - app đặt lịch cắt tóc nhanh, quản lý barber shop và lịch hẹn.
 
-## Getting Started
+## 🔹 Mục tiêu
+- Cho phép khách hàng xem barber, chọn dịch vụ và đặt lịch cắt tóc.
+- Hiển thị lịch làm việc của barber và trạng thái lịch hẹn.
+- Giao diện đẹp, responsive và dễ sử dụng trên mobile.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🔹 Công nghệ sử dụng
+- **Framework:** Flutter
+- **Ngôn ngữ:** Dart
+- **Giao diện:** Material Design
+- **API:** Kết nối backend qua RESTful API
