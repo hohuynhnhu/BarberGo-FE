@@ -66,7 +66,7 @@ class _IntroScreenState extends State<IntroScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: ElevatedButton(
-                      style: AppButtonStyles.roundedButton,
+                      style: AppButtonStyles.roundedButtonBold,
                       onPressed: () {
                         if (_currentPage < introList.length - 1) {
                           _pageController.nextPage(
@@ -78,7 +78,7 @@ class _IntroScreenState extends State<IntroScreen> {
                           viewModel.onGet();
 
                           // Chuyển sang Login Screen
-                          context.pushNamed('login');
+                          context.pushNamed('signup');
                         }
                       },
                       child: Text(

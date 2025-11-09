@@ -14,6 +14,10 @@ extension StringExtensions on String {
     final regex = RegExp(r'^\d{9,11}$');
     return regex.hasMatch(this);
   }
+  //kiểm tra xem có giá trị nhập vào không
+  bool get isNotEmpty {
+    return this.trim().isNotEmpty;
+  }
 }
 
 

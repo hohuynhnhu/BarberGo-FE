@@ -5,12 +5,12 @@ import '../constants/color.dart';
 class AppButtonStyles {
 
   // Style cho button bo tròn (rounded) với padding và màu sắc chuẩn
-  static final roundedButton = ElevatedButton.styleFrom(
+  static final roundedButtonBold = ElevatedButton.styleFrom(
     // Bo góc 12px
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
 
     // Padding trong button: trái-phải 24, trên-dưới 12
-    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
 
     // Màu nền button
     backgroundColor: AppColors.primary,
@@ -18,4 +18,13 @@ class AppButtonStyles {
     // Màu chữ trên button
     foregroundColor: Colors.white,
   );
+  static final roundedButtonnotBold = ElevatedButton.styleFrom(
+    // Bo góc 12px
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+    backgroundColor: AppColors.secondary,
+    foregroundColor: AppColors.primary,
+  );
+
 }
