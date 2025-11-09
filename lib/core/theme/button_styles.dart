@@ -7,7 +7,7 @@ class AppButtonStyles {
   // Style cho button bo tròn (rounded) với padding và màu sắc chuẩn
   static final roundedButton = ElevatedButton.styleFrom(
     // Bo góc 12px
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
 
     // Padding trong button: trái-phải 24, trên-dưới 12
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

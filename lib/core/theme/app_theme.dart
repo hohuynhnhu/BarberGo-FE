@@ -26,7 +26,7 @@ class AppTheme {
         // Màu nền button
         backgroundColor: AppColors.primary,
         // Màu chữ trên button
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.textPrimary,
       ),
     ),
 
