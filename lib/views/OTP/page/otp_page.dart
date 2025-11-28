@@ -53,30 +53,31 @@ class _OtpPageState extends State<OtpPage> {
                   title: "Xác minh OTP",
                   subtitle: "Nhập mã OTP đã gửi đến số điện thoại của bạn",
                 ),
-
+                OtpTimer(
+                  seconds: seconds,
+                  onResend: () {
+                    if (seconds == 0) {
+                      setState(() => seconds = 60);
+                      _startTimer();
+                    }
+                  },
+                ),
                 Column(
                   children: [
                     Row(
+
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
-                        6,
+                        4,
                             (i) => OtpInputField(controller: controllers[i]),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                        SendButton(onPressed: _onSubmit),
+                        ],),
 
-                    OtpTimer(
-                      seconds: seconds,
-                      onResend: () {
-                        if (seconds == 0) {
-                          setState(() => seconds = 60);
-                          _startTimer();
-                        }
-                      },
-                    ),
-
-                    const SizedBox(height: 24),
-                    SendButton(onPressed: _onSubmit),
                   ],
                 ),
 

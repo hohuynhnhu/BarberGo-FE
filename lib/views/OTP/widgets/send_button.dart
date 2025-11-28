@@ -1,3 +1,4 @@
+import 'package:barbergofe/core/theme/button_styles.dart';
 import 'package:flutter/material.dart';
 
 class SendButton extends StatelessWidget {
@@ -9,14 +10,13 @@ class SendButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 14),
-        backgroundColor: Colors.blue,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
+      style: AppButtonStyles.roundedButtonBold2,
+
       child: const Text(
         "Gửi",
-        style: TextStyle(fontSize: 18, color: Colors.white),
+        style: TextStyle(fontSize: 20,
+        fontWeight: FontWeight.bold
+        ),
       ),
     );
   }

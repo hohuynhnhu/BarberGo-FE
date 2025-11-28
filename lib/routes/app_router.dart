@@ -1,6 +1,8 @@
   import 'package:barbergofe/core/utils/intro_service.dart';
 import 'package:barbergofe/routes/route_names.dart';
+import 'package:barbergofe/views/OTP/page/otp_page.dart';
 import 'package:barbergofe/views/auth/SignUp_page.dart';
+import 'package:barbergofe/views/forgotPass/forgotPass_page.dart';
   import 'package:barbergofe/views/not_found_page.dart';
   import 'package:go_router/go_router.dart';
   import 'package:barbergofe/views/auth/SignIn_page.dart';
@@ -23,6 +25,16 @@ import 'package:barbergofe/views/auth/SignUp_page.dart';
           name: 'signup',
           builder: (context, state) => const SignupPage(),
         ),
+        GoRoute(
+            path: RouteNames.otp,
+            name: 'OTP',
+          builder: (context, state) => const OtpPage()
+        ),
+        GoRoute(
+            path:RouteNames.forgot,
+        name: 'forgot',
+          builder: (context, state) => const ForgotpassPage()
+        )
       ],   errorBuilder: (context, state) => const NotFoundPage(),
       redirect: (context, state) async {
         bool seen = await IntroService.isIntroSeen();

@@ -1,3 +1,4 @@
+import 'package:barbergofe/core/theme/text_styles.dart';
 import 'package:flutter/material.dart';
 
 class OptHeader extends StatelessWidget {
@@ -11,16 +12,11 @@ class OptHeader extends StatelessWidget {
     child: Column(
       children: [
         Text(title,
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold
-        ),
+        style: AppTextStyles.heading
     ),
           const SizedBox(height: 8),
         Text(subtitle,
-        style: TextStyle(
-          fontSize: 16,
-        ),
+        style: AppTextStyles.body,
         )
 
       ],

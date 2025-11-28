@@ -1,3 +1,4 @@
+import 'package:barbergofe/core/constants/color.dart';
 import 'package:flutter/material.dart';
 
 class OtpFooterShapes extends StatelessWidget {
@@ -6,58 +7,60 @@ class OtpFooterShapes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 120,
+      height: 300,
       width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Stack(
         children: [
-          // Hình tam giác
-          CustomPaint(
-            size: const Size(50, 50),
-            painter: TrianglePainter(),
+          Positioned(
+              bottom: -170,
+              left: -50,
+              child:
+              Container(
+                width: 560,
+                height: 410,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary,
+                ),
+              )),
+          Positioned(
+            left: -90,
+            bottom: 10,
+            child:
+                Transform.rotate(angle: 0.7853981633974483,
+            child:
+            Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: Color(0xFF77E0D9),
+                borderRadius: BorderRadius.circular(20),
+              ),
+            )
+          )
           ),
-
           // Hình tròn lớn
+          Positioned(
+            right: -100,
+            bottom: 10,
+            child:
           Container(
-            width: 70,
-            height: 70,
+            width: 275,
+            height: 275,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.blue,
+              color: Color(0xFF0B64FF),
             ),
-          ),
+          ),),
 
           // Hình tròn màu khác
-          Container(
-            width: 50,
-            height: 50,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.orange,
-            ),
-          )
+
+
         ],
       ),
     );
   }
 }
 
-class TrianglePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.green
-      ..style = PaintingStyle.fill;
 
-    final path = Path();
-    path.moveTo(size.width / 2, 0);
-    path.lineTo(0, size.height);
-    path.lineTo(size.width, size.height);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
