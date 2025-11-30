@@ -1,5 +1,6 @@
   import 'package:barbergofe/core/utils/intro_service.dart';
 import 'package:barbergofe/routes/route_names.dart';
+import 'package:barbergofe/routes/shell_routes.dart';
 import 'package:barbergofe/views/OTP/page/otp_page.dart';
 import 'package:barbergofe/views/auth/SignUp_page.dart';
 import 'package:barbergofe/views/forgotPass/forgotPass_page.dart';
@@ -42,10 +43,10 @@ import 'package:barbergofe/views/succes/succes_page.dart';
             builder: (context, state) => const SuccesPage()
         ),
         GoRoute(path: RouteNames.newPass,
-            name: 'succes',
+            name: 'newpass',
             builder: (context, state) => const NewpassPage()
-        )
-
+        ),
+        shellRoutes,
         
       ],   errorBuilder: (context, state) => const NotFoundPage(),
       redirect: (context, state) async {
