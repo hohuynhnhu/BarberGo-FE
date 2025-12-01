@@ -11,6 +11,12 @@ class AppTextStyles {
     fontWeight: FontWeight.bold,     // chữ đậm
     color: AppColors.textPrimary,    // màu chữ chính
   );
+  static const headinglight = TextStyle(
+    fontSize: 30,                    // cỡ chữ
+    fontWeight: FontWeight.bold,     // chữ đậm
+    color: AppColors.textPrimaryLight,    // màu chữ chính
+  );
+
 
   // Style cho nội dung (body text)
   static const body = TextStyle(
