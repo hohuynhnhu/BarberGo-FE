@@ -1,7 +1,9 @@
 import 'package:barbergofe/core/constants/color.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CardShop extends StatelessWidget {
+  final String id;
   final String name;
   final String location;
   final double rank;
@@ -9,6 +11,7 @@ class CardShop extends StatelessWidget {
 
   const CardShop({
     super.key,
+    required this.id,
     required this.imagePath,
     required this.name,
     required this.location,
@@ -53,13 +56,15 @@ class CardShop extends StatelessWidget {
                         Text(location),
                       ]),
                       Row(children: [
-                        const Icon(Icons.star, color: Color(0xFFF3B51C)),
+                         const Icon(Icons.star, color: Color(0xFFF3B51C)),
                         const SizedBox(width: 4),
                         Text(rank.toString(), style: TextStyle(
                           fontWeight: FontWeight.bold
                         ),),
                       ]),
-                      TextButton(onPressed: (){}, child: Text("Xem chi tiết"), style: TextButton.styleFrom(
+                      TextButton(onPressed: (){
+                        context.goNamed('detail', pathParameters: {'id': id});
+                      }, child: Text("Xem chi tiết"), style: TextButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: AppColors.textPrimaryLight,
 
@@ -71,13 +76,13 @@ class CardShop extends StatelessWidget {
 
               // RIGHT SIDE IMAGE (nhô lên)
               Transform.translate(
-                offset: const Offset(0, -20), // ảnh nhô lên 20px
+                offset: const Offset(0, -30), // ảnh nhô lên 20px
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
                     imagePath,
-                    width: 140,
-                    height: 140,
+                    width: 150,
+                    height: 150,
                     fit: BoxFit.cover,
                   ),
                 ),
