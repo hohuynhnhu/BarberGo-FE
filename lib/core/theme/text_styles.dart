@@ -29,5 +29,11 @@ class AppTextStyles {
     fontSize: 14,                    // cỡ chữ nhỏ
     color: AppColors.textSecondary,  // màu chữ phụ
   );
+
+  static const h2= TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    color: AppColors.primary,
+  );
 }
 //cách dùng style:AppTextStyles.heading;
