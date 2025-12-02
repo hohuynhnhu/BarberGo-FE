@@ -9,4 +9,5 @@ class RouteNames{
   static const forgot='/forgot';
   static const succes='/succes';
   static const  newPass='/newPass';
+  static const acnes = '/acne';
 }
