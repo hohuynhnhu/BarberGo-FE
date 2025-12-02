@@ -3,6 +3,7 @@ import 'package:barbergofe/routes/route_names.dart';
 import 'package:barbergofe/routes/shell_routes.dart';
 import 'package:barbergofe/views/OTP/page/otp_page.dart';
 import 'package:barbergofe/views/auth/SignUp_page.dart';
+import 'package:barbergofe/views/detail_shop/detail_shop_page.dart';
 import 'package:barbergofe/views/forgotPass/forgotPass_page.dart';
 import 'package:barbergofe/views/newPass/newPass_page.dart';
   import 'package:barbergofe/views/not_found_page.dart';
@@ -46,6 +47,14 @@ import 'package:barbergofe/views/succes/succes_page.dart';
             name: 'newpass',
             builder: (context, state) => const NewpassPage()
         ),
+        GoRoute(path: RouteNames.detail,
+        name: 'detail',
+          builder: (context, state) {
+          final id = state.pathParameters['id'] ?? "";
+          return DetailShopPage(id: id);
+  }
+        ),
+
         shellRoutes,
         
       ],   errorBuilder: (context, state) => const NotFoundPage(),
