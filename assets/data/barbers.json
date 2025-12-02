@@ -1,0 +1,41 @@
+[
+  {
+    "id": "1a2b3c4d-0000-0000-0000-000000000001",
+    "name": "John Doe",
+    "location": "Hà Nội",
+    "area": "Hoàn Kiếm",
+    "address": "123 Hàng Bạc, Hoàn Kiếm, Hà Nội",
+    "rank": 4.5,
+    "imagePath": "assets/images/logos/hair.jpg",
+    "services": [
+      {"service_name": "Cắt tóc nam", "price": 150000, "duration_min": 30},
+      {"service_name": "Cạo râu", "price": 50000, "duration_min": 15}
+    ]
+  },
+  {
+    "id": "1a2b3c4d-0000-0000-0000-000000000002",
+    "name": "Jane Smith",
+    "location": "TP. HCM",
+    "area": "Quận 1",
+    "address": "456 Lê Thánh Tôn, Quận 1, TP. HCM",
+    "rank": 4.8,
+    "imagePath": "assets/images/logos/hair.jpg",
+    "services": [
+      {"service_name": "Cắt tóc nữ", "price": 200000, "duration_min": 45},
+      {"service_name": "Nhuộm tóc", "price": 400000, "duration_min": 60}
+    ]
+  },
+  {
+    "id": "1a2b3c4d-0000-0000-0000-000000000003",
+    "name": "Alex Nguyen",
+    "location": "Đà Nẵng",
+    "area": "Hải Châu",
+    "address": "789 Nguyễn Văn Linh, Hải Châu, Đà Nẵng",
+    "rank": 4.2,
+    "imagePath": "assets/images/logos/hair.jpg",
+    "services": [
+      {"service_name": "Cắt tóc trẻ em", "price": 120000, "duration_min": 25},
+      {"service_name": "Tạo kiểu tóc", "price": 180000, "duration_min": 40}
+    ]
+  }
+]
