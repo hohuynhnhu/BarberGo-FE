@@ -1,13 +1,223 @@
+import 'package:barbergofe/viewmodels/auth/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'widgets/profile_header.dart';
+import 'widgets/profile_menu_item.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cá nhân'),),
-      body: Text('Cá nhân'),
+      body: SafeArea(
+        child: Consumer<AuthViewModel>(
+          builder: (context, authVM, child) {
+            final user = authVM.currentUser;
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+
+                  // ==================== PROFILE HEADER ====================
+
+                  ProfileHeader(
+                    name: user?.fullName ?? 'Người dùng',
+                    avatarUrl: user?.avatarUrl,
+                  ),
+
+
+                  // ==================== MENU ITEMS ====================
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        // Thông tin cá nhân
+                        ProfileMenuItem(
+                          icon: Icons.person_outline,
+                          title: 'Thông tin cá nhân',
+                          onTap: () {
+                            context.pushNamed('personal');
+                          },
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Đăng ký đối tác
+                        ProfileMenuItem(
+                          icon: Icons.people_outline,
+                          title: 'Đăng ký đối tác',
+                          onTap: () {
+                            // TODO: Navigate to partner registration
+                            context.pushNamed('partner_registration');
+                          },
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Địa chỉ
+                        ProfileMenuItem(
+                          icon: Icons.location_on_outlined,
+                          title: 'Địa chỉ',
+                          onTap: () {
+                            // TODO: Navigate to address management
+                            context.pushNamed('address');
+                          },
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Trạng thái hồ sơ
+                        ProfileMenuItem(
+                          icon: Icons.folder_outlined,
+                          title: 'Trạng thái hồ sơ',
+                          onTap: () {
+                            // TODO: Navigate to profile status
+                            context.pushNamed('profile_status');
+                          },
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Cài đặt
+                        ProfileMenuItem(
+                          icon: Icons.settings_outlined,
+                          title: 'Cài đặt',
+                          onTap: () {
+                            _showSettingsBottomSheet(context, authVM);
+                          },
+                        ),
+
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // ==================== SETTINGS BOTTOM SHEET ====================
+
+  void _showSettingsBottomSheet(BuildContext context, AuthViewModel authVM) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Title
+            const Text(
+              'Cài đặt',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Change Password
+            ListTile(
+              leading: const Icon(Icons.lock_outline),
+              title: const Text('Đổi mật khẩu'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.pop(context);
+                context.pushNamed('changePass');
+              },
+            ),
+
+            const Divider(),
+
+            // Logout
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text(
+                'Đăng xuất',
+                style: TextStyle(color: Colors.red),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _showLogoutDialog(context, authVM);
+              },
+            ),
+
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==================== LOGOUT DIALOG ====================
+
+  void _showLogoutDialog(BuildContext context, AuthViewModel authVM) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text('Đăng xuất'),
+        content: const Text('Bạn có chắc chắn muốn đăng xuất không?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+
+              // Show loading
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+
+              // Logout
+              await authVM.logout();
+
+              // Navigate to login
+              if (context.mounted) {
+                Navigator.pop(context); // Close loading
+                context.goNamed('signin');
+              }
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Đăng xuất'),
+          ),
+        ],
+      ),
     );
   }
 }
