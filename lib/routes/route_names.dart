@@ -1,5 +1,6 @@
 class RouteNames{
   static const getStarted = '/';
+  static const String intro = '/intro';
   static const home ='/home';
   static const signin = '/signin';
   static const signup = '/signup';
@@ -11,4 +12,9 @@ class RouteNames{
   static const  newPass='/newPass';
   static const acnes = '/acne';
   static const detail='/detail/:id';
+  static const personal='/personal';
+  static const changePass='/ChangePass';
+//EROR
+  static const String notFound = '/404';
+
 }
