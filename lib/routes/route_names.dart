@@ -11,4 +11,6 @@ class RouteNames{
   static const  newPass='/newPass';
   static const acnes = '/acne';
   static const detail='/detail/:id';
+  static const hair='/hair';
+
 }
