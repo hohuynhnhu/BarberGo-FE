@@ -1,10 +1,10 @@
 import 'dart:ui';
+import 'package:barbergofe/viewmodels/auth/auth_viewmodel.dart';
 import 'package:barbergofe/viewmodels/auth/sign_in_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:barbergofe/core/theme/AppImages.dart';
-import 'package:barbergofe/core/theme/text_styles.dart';
 import 'package:barbergofe/views/auth/widgets/input_field.dart';
 import 'package:barbergofe/views/auth/widgets/password_field.dart';
 import 'package:barbergofe/views/auth/widgets/auth_button.dart';
@@ -13,11 +13,59 @@ class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
 
   @override
+  Widget build(BuildContext context){
+  return ChangeNotifierProvider(create:
+  (_) => SignInViewModel(),
+    builder: (context, child){
+    return _SigninPageContent();
+    },
+  );
+  }
+}
+
+
+class _SigninPageContent extends StatelessWidget {
+
+  // ==================== LOGIN HANDLER ====================
+
+  Future<void> _handleLogin(BuildContext context, bool mounted) async {
+    // Get both ViewModels
+    final signInVM = context.read<SignInViewModel>();
+    final authVM = context.read<AuthViewModel>(); // ⭐ Global auth
+
+    // Validate
+    final validationPassed = await signInVM.signIn();
+
+    if (!validationPassed) {
+      print('❌ Validation failed');
+      return;
+    }
+
+    // Call login
+    print('🔵 Calling AuthViewModel.login()...');
+
+    final success = await authVM.login(
+      email: signInVM.emailController.text.trim(),
+      password: signInVM.passwordController.text,
+    );
+
+    // Navigate if success
+    if (success && mounted) {
+      print('✅ Login successful, navigating to home...');
+      context.goNamed('home');
+    } else {
+      print('❌ Login failed');
+    }
+  }
+
+  // ==================== BUILD ====================
+
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => SignInViewModel(),
-      child: Consumer<SignInViewModel>(
-        builder: (context, viewModel, _) {
+      child: Consumer2<SignInViewModel, AuthViewModel>( // ⭐ Listen to both
+        builder: (context, signInVM, authVM, _) {
           return Scaffold(
             extendBodyBehindAppBar: true,
             body: Container(
@@ -32,7 +80,7 @@ class SignInPage extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  // Hình tròn trang trí
+                  // Decorative circles (giữ nguyên)
                   Positioned(
                     left: -229,
                     top: -58,
@@ -67,23 +115,38 @@ class SignInPage extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: const [
-                                Text("Barber Go",
-                                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                Text(
+                                  "Barber Go",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                                Text("Style Hair",
-                                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                Text(
+                                  "Style Hair",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ],
                             ),
                             const SizedBox(width: 8),
-                            Image.asset(AppImages.logo, width: 98, height: 83, fit: BoxFit.contain),
+                            Image.asset(
+                              AppImages.logo,
+                              width: 98,
+                              height: 83,
+                              fit: BoxFit.contain,
+                            ),
                           ],
                         ),
                       ],
                     ),
                   ),
 
-                  // Tiêu đề
+                  // Title
                   const Positioned(
                     top: 242,
                     left: 16,
@@ -100,7 +163,7 @@ class SignInPage extends StatelessWidget {
                     ),
                   ),
 
-                  // Form đăng nhập
+                  // Form
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Padding(
@@ -122,55 +185,121 @@ class SignInPage extends StatelessWidget {
                                   offset: const Offset(0, 4),
                                 ),
                               ],
-                              border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.2),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.3),
+                                width: 1.2,
+                              ),
                             ),
                             child: SingleChildScrollView(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Email"),
+                                  const Text(
+                                    "Email",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
                                   InputField(
-                                    controller: viewModel.emailController,
-                                    errorText: viewModel.emailError,
+                                    controller: signInVM.emailController,
+                                    errorText: signInVM.emailError,
                                     hint: "Nhập email của bạn",
                                     keyboardType: TextInputType.emailAddress,
                                   ),
-                                  Text("Mật khẩu"),
-                                  PasswordField(
-                                    controller: viewModel.passwordController,
-                                    textError: viewModel.passwordError,
+
+                                  const Text(
+                                    "Mật khẩu",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
+                                  const SizedBox(height: 8),
+                                  PasswordField(
+                                    controller: signInVM.passwordController,
+                                    textError: signInVM.passwordError,
+                                  ),
+
+                                  // ⭐ ERROR FROM AUTH VIEWMODEL
+                                  if (authVM.errorMessage != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 16),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.shade50,
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: Colors.red.shade200,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.error_outline,
+                                              color: Colors.red.shade700,
+                                              size: 20,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Expanded(
+                                              child: Text(
+                                                authVM.errorMessage!,
+                                                style: TextStyle(
+                                                  color: Colors.red.shade700,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
                                   const SizedBox(height: 24),
+
                                   Align(
                                     alignment: Alignment.center,
                                     child: AppButton(
-                                      onPressed: () async {
-                                        final isSuccess= await viewModel.signIn();
-                                        if(isSuccess){
-                                          context.goNamed('home');
-                                        }
-
-                                      },
-                                      isLoading: viewModel.isLoading,
+                                      onPressed:() =>  _handleLogin(context, context.mounted), // ⭐ Use handler
+                                      isLoading: signInVM.isLoading || authVM.isLoading, // ⭐ Both loading
                                       text: 'ĐĂNG NHẬP',
                                     ),
                                   ),
+
                                   const SizedBox(height: 16),
-                                  TextButton(onPressed: (){
-                                    context.pushNamed('forgot');
-                                  }, child: const Text("Quên mật khẩu")),
+
+                                  Center(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        context.pushNamed('forgot');
+                                      },
+                                      child: const Text(
+                                        "Quên mật khẩu",
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                  ),
+
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Text("Chưa có tài khoản?"),
+                                      const Text(
+                                        "Chưa có tài khoản?",
+                                        style: TextStyle(fontSize: 14),
+                                      ),
                                       TextButton(
-                                        onPressed: () { context.goNamed('signup');},
+                                        onPressed: () {
+                                          context.goNamed('signup');
+                                        },
                                         child: const Text(
                                           "Đăng ký ngay",
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black,
                                             decoration: TextDecoration.underline,
+                                            fontSize: 14,
                                           ),
                                         ),
                                       ),
