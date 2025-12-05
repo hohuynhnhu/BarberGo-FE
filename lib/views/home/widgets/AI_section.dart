@@ -26,7 +26,7 @@ class AiSection extends StatelessWidget {
               label: 'AI trị mụn',
               onTap: () {
                 print("Nút AI trị mụn được bấm");
-                context.goNamed('acne');
+                context.pushNamed('acne');
               },
             ),
 
