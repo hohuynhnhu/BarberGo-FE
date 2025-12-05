@@ -1,5 +1,6 @@
 import 'package:barbergofe/core/constants/app_strings.dart';
 import 'package:barbergofe/core/theme/AppImages.dart';
+import 'package:barbergofe/core/utils/auth_storage.dart';
 import 'package:barbergofe/core/utils/intro_service.dart';
 import 'package:barbergofe/models/intro/intro_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +13,13 @@ class IntroViewModel extends ChangeNotifier{
   ];
   /// Lưu trạng thái đã xem intro
   Future<void> onGet() async {
-    await IntroService.setIntroSeen();
+    print('[INTRO VIEWMODEL] Marking intro as seen...');
+
+    try {
+      await AuthStorage.markIntroAsSeen();
+      print('[INTRO VIEWMODEL] Intro marked successfully');
+    } catch (e) {
+      print('[INTRO VIEWMODEL] Error marking intro: $e');
+    }
   }
 }
