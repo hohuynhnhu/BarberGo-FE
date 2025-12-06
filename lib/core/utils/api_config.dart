@@ -3,7 +3,7 @@ class ApiConfig {
   // ==================== BASE URLS ====================
 
   /// Development URL (local/test)
-  static const String devBaseUrl = "http://192.168.1.42:8000";
+  static const String devBaseUrl = "http://10.197.139.241:8000";
 
   // /// Production URL (deploy lên server thật)
   // static const String prodBaseUrl = "https://api.yourdomain.com";
@@ -25,7 +25,9 @@ class ApiConfig {
   static const String hairstyleMultiple = "/api/v1/hairstyle/generate-multiple";
   static const String hairstyleHealth = "/api/v1/hairstyle/health";
   // ==================== HELPERS ====================
-
+  static const String chatbotChat = "/api/chatbot/chat";
+  static const String chatbotHealth = "/api/chatbot/health";
+  static const String chatbotTest = "/api/chatbot/test";
   /// Get full URL
   static String getUrl(String endpoint) => '$baseUrl$endpoint';
 

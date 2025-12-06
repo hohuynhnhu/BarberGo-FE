@@ -12,5 +12,7 @@ class RouteNames{
   static const acnes = '/acne';
   static const detail='/detail/:id';
   static const hair='/hair';
+  static const chat='/chat';
+
 
 }

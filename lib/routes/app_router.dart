@@ -3,6 +3,7 @@ import 'package:barbergofe/routes/route_names.dart';
 import 'package:barbergofe/routes/shell_routes.dart';
 import 'package:barbergofe/views/OTP/page/otp_page.dart';
 import 'package:barbergofe/views/auth/SignUp_page.dart';
+import 'package:barbergofe/views/chat/rag_chat_screen.dart';
 import 'package:barbergofe/views/detail_shop/detail_shop_page.dart';
 import 'package:barbergofe/views/forgotPass/forgotPass_page.dart';
 import 'package:barbergofe/views/hair/hairstyle_screen.dart';
@@ -70,7 +71,10 @@ import 'package:barbergofe/views/succes/succes_page.dart';
             name: 'hair',
             builder: (context, state) =>  CameraScreen()
         ),
-
+        GoRoute(path: RouteNames.chat,
+            name: 'chat',
+            builder: (context, state) =>  const RagChatScreen()
+        ),
         shellRoutes,
         
       ],   errorBuilder: (context, state) => const NotFoundPage(),
