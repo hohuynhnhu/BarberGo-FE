@@ -51,8 +51,7 @@ class ProfilePage extends StatelessWidget {
                           icon: Icons.people_outline,
                           title: 'Đăng ký đối tác',
                           onTap: () {
-                            // TODO: Navigate to partner registration
-                            context.pushNamed('partner_registration');
+                            context.pushNamed('Partneregistration');
                           },
                         ),
 
@@ -63,8 +62,7 @@ class ProfilePage extends StatelessWidget {
                           icon: Icons.location_on_outlined,
                           title: 'Địa chỉ',
                           onTap: () {
-                            // TODO: Navigate to address management
-                            context.pushNamed('address');
+                            context.pushNamed('location_picker');
                           },
                         ),
 
@@ -75,8 +73,7 @@ class ProfilePage extends StatelessWidget {
                           icon: Icons.folder_outlined,
                           title: 'Trạng thái hồ sơ',
                           onTap: () {
-                            // TODO: Navigate to profile status
-                            context.pushNamed('profile_status');
+                            context.pushNamed('AppointmentDetail');
                           },
                         ),
 
@@ -141,17 +138,17 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Change Password
-            ListTile(
-              leading: const Icon(Icons.lock_outline),
-              title: const Text('Đổi mật khẩu'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.pop(context);
-                context.pushNamed('changePass');
-              },
-            ),
-
-            const Divider(),
+            // ListTile(
+            //   leading: const Icon(Icons.lock_outline),
+            //   title: const Text('Đổi mật khẩu'),
+            //   trailing: const Icon(Icons.chevron_right),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //     context.pushNamed('changePass');
+            //   },
+            // ),
+            //
+            // const Divider(),
 
             // Logout
             ListTile(

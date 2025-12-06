@@ -1,206 +1,278 @@
 import 'dart:io';
-import 'package:barbergofe/viewmodels/auth/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'widgets/profile_avatar.dart';
 import '../../core/utils/image_picker_helper.dart';
+import '../../viewmodels/profile/profile_viewmodel.dart';
 
 class PersonalInfoPage extends StatelessWidget {
   const PersonalInfoPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pop(),
+    // Sử dụng Consumer để wrap toàn bộ page
+    return Consumer<ProfileViewModel>(
+      builder: (context, profileVM, child) {
+        // Load profile khi build lần đầu
+        // Load profile nếu chưa có data
+        if (profileVM.currentUser == null && !profileVM.isLoading) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            profileVM.loadProfile();
+          });
+        }
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF5F5F5),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () => context.pop(),
+            ),
+            title: const Text(
+              'Thông tin cá nhân',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          body: _buildBody(context, profileVM),
+        );
+      },
+    );
+  }
+
+  Widget _buildBody(BuildContext context, ProfileViewModel profileVM) {
+    // Show loading indicator
+    if (profileVM.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    // Show error if any
+    if (profileVM.errorMessage != null && profileVM.currentUser == null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                profileVM.errorMessage!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => profileVM.loadProfile(),
+              child: const Text('Thử lại'),
+            ),
+          ],
         ),
-        title: const Text(
-          'Thông tin cá nhân',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+      );
+    }
+
+    final user = profileVM.currentUser;
+
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // ==================== AVATAR SECTION ====================
+                    _buildSection(
+                      context,
+                      title: 'Ảnh đại diện',
+                      trailing: TextButton(
+                        onPressed: profileVM.isUpdating
+                            ? null
+                            : () => _showEditAvatarDialog(context),
+                        child: const Text(
+                          'Chỉnh sửa',
+                          style: TextStyle(
+                            color: Color(0xFF5B4B8A),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      child: Center(
+                        child: ProfileAvatar(
+                          avatarUrl: user?.avatarUrl,
+                          size: 100,
+                        ),
+                      ),
+                    ),
+
+                    const Divider(height: 32),
+
+                    // ==================== NAME SECTION ====================
+                    _buildSection(
+                      context,
+                      title: 'Tên tài khoản',
+                      trailing: TextButton(
+                        onPressed: profileVM.isUpdating
+                            ? null
+                            : () {
+                          _showEditDialog(
+                            context,
+                            title: 'Chỉnh sửa tên',
+                            currentValue: user?.fullName ?? '',
+                            onSave: (newValue) async {
+                              final success = await profileVM.updateName(newValue);
+                              if (context.mounted) {
+                                if (success) {
+                                  _showSuccessSnackBar(context, 'Cập nhật tên thành công');
+                                } else {
+                                  _showErrorSnackBar(
+                                    context,
+                                    profileVM.errorMessage ?? 'Cập nhật thất bại',
+                                  );
+                                }
+                              }
+                            },
+                          );
+                        },
+                        child: const Text(
+                          'Chỉnh sửa',
+                          style: TextStyle(
+                            color: Color(0xFF5B4B8A),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        user?.fullName ?? 'Chưa cập nhật',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+
+                    const Divider(height: 32),
+
+                    // ==================== PHONE SECTION ====================
+                    _buildSection(
+                      context,
+                      title: 'Số điện thoại',
+                      trailing: TextButton(
+                        onPressed: profileVM.isUpdating
+                            ? null
+                            : () {
+                          _showEditDialog(
+                            context,
+                            title: 'Chỉnh sửa số điện thoại',
+                            currentValue: user?.phone ?? '',
+                            keyboardType: TextInputType.phone,
+                            onSave: (newValue) async {
+                              final success = await profileVM.updatePhone(newValue);
+                              if (context.mounted) {
+                                if (success) {
+                                  _showSuccessSnackBar(
+                                    context,
+                                    'Cập nhật số điện thoại thành công',
+                                  );
+                                } else {
+                                  _showErrorSnackBar(
+                                    context,
+                                    profileVM.errorMessage ?? 'Cập nhật thất bại',
+                                  );
+                                }
+                              }
+                            },
+                          );
+                        },
+                        child: const Text(
+                          'Chỉnh sửa',
+                          style: TextStyle(
+                            color: Color(0xFF5B4B8A),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        user?.phone ?? 'Chưa cập nhật',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+
+                    const Divider(height: 32),
+
+                    // ==================== EMAIL SECTION ====================
+                    _buildSection(
+                      context,
+                      title: 'Email',
+                      child: Text(
+                        user?.email ?? 'Chưa cập nhật',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
         ),
-      ),
-      body: Consumer<AuthViewModel>(
-        builder: (context, authVM, child) {
-          final user = authVM.currentUser;
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
+        // ==================== LOADING OVERLAY ====================
+        if (profileVM.isUpdating)
+          Container(
+            color: Colors.black.withOpacity(0.3),
+            child: const Center(
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(24.0),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // ==================== AVATAR SECTION ====================
-
-                      _buildSection(
-                        context,
-                        title: 'Ảnh đại diện',
-                        trailing: TextButton(
-                          onPressed: () {
-                            _showEditAvatarDialog(context);
-                          },
-                          child: const Text(
-                            'Chỉnh sửa',
-                            style: TextStyle(
-                              color: Color(0xFF5B4B8A),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        child: Center(
-                          child: ProfileAvatar(
-                            avatarUrl: user?.avatarUrl,
-                            size: 100,
-                          ),
-                        ),
-                      ),
-
-                      const Divider(height: 32),
-
-                      // ==================== NAME SECTION ====================
-
-                      _buildSection(
-                        context,
-                        title: 'Tên tài khoản',
-                        trailing: TextButton(
-                          onPressed: () {
-                            _showEditDialog(
-                              context,
-                              title: 'Chỉnh sửa tên',
-                              currentValue: user?.fullName ?? '',
-                              onSave: (newValue) {
-                                print('New name: $newValue');
-                              },
-                            );
-                          },
-                          child: const Text(
-                            'Chỉnh sửa',
-                            style: TextStyle(
-                              color: Color(0xFF5B4B8A),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          user?.fullName ?? 'Chưa cập nhật',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
-
-                      const Divider(height: 32),
-
-                      // ==================== PHONE SECTION ====================
-
-                      _buildSection(
-                        context,
-                        title: 'Số điện thoại',
-                        trailing: TextButton(
-                          onPressed: () {
-                            _showEditDialog(
-                              context,
-                              title: 'Chỉnh sửa số điện thoại',
-                              currentValue: user?.phone ?? '',
-                              keyboardType: TextInputType.phone,
-                              onSave: (newValue) {
-                                print('New phone: $newValue');
-                              },
-                            );
-                          },
-                          child: const Text(
-                            'Chỉnh sửa',
-                            style: TextStyle(
-                              color: Color(0xFF5B4B8A),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          user?.phone ?? 'Chưa cập nhật',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
-
-                      const Divider(height: 32),
-
-                      // ==================== EMAIL SECTION ====================
-
-                      _buildSection(
-                        context,
-                        title: 'Email',
-                        trailing: TextButton(
-                          onPressed: () {
-                            _showEditDialog(
-                              context,
-                              title: 'Chỉnh sửa email',
-                              currentValue: user?.email ?? '',
-                              keyboardType: TextInputType.emailAddress,
-                              onSave: (newValue) {
-                                print('New email: $newValue');
-                              },
-                            );
-                          },
-                          child: const Text(
-                            'Chỉnh sửa',
-                            style: TextStyle(
-                              color: Color(0xFF5B4B8A),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          user?.email ?? 'Chưa cập nhật',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Đang cập nhật...'),
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 16),
-              ],
+              ),
             ),
-          );
-        },
-      ),
+          ),
+      ],
     );
   }
 
   // ==================== BUILD SECTION ====================
-
   Widget _buildSection(
       BuildContext context, {
         required String title,
@@ -231,19 +303,18 @@ class PersonalInfoPage extends StatelessWidget {
   }
 
   // ==================== EDIT DIALOG ====================
-
   void _showEditDialog(
       BuildContext context, {
         required String title,
         required String currentValue,
-        required Function(String) onSave,
+        required Future<void> Function(String) onSave,
         TextInputType? keyboardType,
       }) {
     final controller = TextEditingController(text: currentValue);
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -264,22 +335,15 @@ class PersonalInfoPage extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Hủy', style: TextStyle(color: Colors.grey)),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               final newValue = controller.text.trim();
               if (newValue.isNotEmpty) {
-                onSave(newValue);
-                Navigator.pop(context);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cập nhật thành công'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+                Navigator.pop(dialogContext);
+                await onSave(newValue);
               }
             },
             child: const Text(
@@ -296,19 +360,17 @@ class PersonalInfoPage extends StatelessWidget {
   }
 
   // ==================== EDIT AVATAR DIALOG ====================
-
   void _showEditAvatarDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) => Container(
+      builder: (sheetContext) => Container(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
               width: 40,
               height: 4,
@@ -317,10 +379,7 @@ class PersonalInfoPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // Title
             const Text(
               'Chọn ảnh đại diện',
               style: TextStyle(
@@ -328,10 +387,7 @@ class PersonalInfoPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // Gallery option
             ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(8),
@@ -346,11 +402,10 @@ class PersonalInfoPage extends StatelessWidget {
               ),
               title: const Text('Chọn từ thư viện'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(sheetContext);
                 _handlePickImage(context);
               },
             ),
-
             const SizedBox(height: 16),
           ],
         ),
@@ -359,25 +414,11 @@ class PersonalInfoPage extends StatelessWidget {
   }
 
   // ==================== HANDLE PICK IMAGE ====================
-
   Future<void> _handlePickImage(BuildContext context) async {
     print('🔵 [PERSONAL INFO] Pick image requested');
 
-    // Show loading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-
     try {
-      // Pick image from gallery
       final File? imageFile = await ImagePickerHelper.pickFromGallery(context);
-
-      // Close loading
-      Navigator.pop(context);
 
       if (imageFile == null) {
         print('ℹ️ [PERSONAL INFO] No image selected');
@@ -386,31 +427,50 @@ class PersonalInfoPage extends StatelessWidget {
 
       print('✅ [PERSONAL INFO] Image selected: ${imageFile.path}');
 
-      // TODO: Upload to server
-      // await uploadAvatar(imageFile);
+      if (!context.mounted) return;
 
-      // Show success
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Đã chọn ảnh thành công'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      // Upload avatar using ProfileViewModel - sử dụng Consumer để lấy viewmodel
+      final profileVM = context.read<ProfileViewModel>();
+      final success = await profileVM.updateAvatar(imageFile);
 
+      if (!context.mounted) return;
+
+      if (success) {
+        _showSuccessSnackBar(context, 'Cập nhật ảnh đại diện thành công');
+      } else {
+        _showErrorSnackBar(
+          context,
+          profileVM.errorMessage ?? 'Cập nhật ảnh đại diện thất bại',
+        );
+      }
     } catch (e) {
       print('❌ [PERSONAL INFO] Error: $e');
 
-      // Close loading if still open
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
+      if (context.mounted) {
+        _showErrorSnackBar(context, 'Lỗi: ${e.toString()}');
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Lỗi: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
+  }
+
+  // ==================== SHOW SUCCESS SNACKBAR ====================
+  void _showSuccessSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  // ==================== SHOW ERROR SNACKBAR ====================
+  void _showErrorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 }
